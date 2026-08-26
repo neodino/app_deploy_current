@@ -1,0 +1,33 @@
+---
+# canvas_step: raise_firewall_request
+# intent: Submit an ITSM firewall change request for the required ports and CIDRs
+# systems: itsm
+- name: Raise firewall change request in ITSM
+  hosts: localhost
+  gather_facts: false
+  vars:
+    ports: "{{ ports | mandatory }}"
+    cidr: "{{ cidr | mandatory }}"
+  tasks:
+    - name: Submit firewall change request via ITSM REST API
+      ansible.builtin.uri:
+        url: "{{ itsm_url }}/api/now/table/change_request"
+        method: POST
+        headers:
+          Authorization: "Basic {{ (itsm_username + ':' + itsm_password) | b64encode }}"
+          Content-Type: application/json
+        body_format: json
+        body:
+          short_description: "Firewall rule request for app deployment"
+          description: "Open ports {{ ports }} for CIDR {{ cidr }}"
+          category: "network"
+          type: "standard"
+        status_code: 201
+        validate_certs: false
+      register: fw_ticket
+      tags: [canvas_step_raise_firewall_request]
+
+    - name: Show change request number
+      ansible.builtin.debug:
+        msg: "Change request created: {{ fw_ticket.json.result.number }}"
+      tags: [canvas_step_raise_firewall_request]

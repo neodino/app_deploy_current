@@ -1,0 +1,30 @@
+---
+# canvas_step: provision_ec2_instance
+# intent: Provision an EC2 instance with the specified type, AMI, and subnet
+# systems: aws_ec2
+- name: Provision EC2 instance
+  hosts: localhost
+  gather_facts: false
+  vars:
+    instance_type: "{{ instance_type | mandatory }}"
+    ami_id: "{{ ami_id | mandatory }}"
+    subnet_id: "{{ subnet_id | mandatory }}"
+  tasks:
+    - name: Launch EC2 instance
+      amazon.aws.ec2_instance:
+        name: "app-deploy-{{ ansible_date_time.epoch | default('instance') }}"
+        instance_type: "{{ instance_type }}"
+        image_id: "{{ ami_id }}"
+        subnet_id: "{{ subnet_id }}"
+        state: present
+        wait: true
+        tags:
+          Environment: production
+          ManagedBy: ansible
+      register: ec2_result
+      tags: [canvas_step_provision_ec2_instance]
+
+    - name: Show provisioned instance details
+      ansible.builtin.debug:
+        msg: "Instance ID: {{ ec2_result.instances[0].instance_id }}, IP: {{ ec2_result.instances[0].private_ip_address }}"
+      tags: [canvas_step_provision_ec2_instance]

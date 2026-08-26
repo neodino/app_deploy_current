@@ -1,0 +1,28 @@
+---
+# canvas_step: update_cmdb
+# intent: Update the CMDB with the new CI details after successful deployment
+# systems: cmdb
+- name: Update CMDB with deployment CI details
+  hosts: localhost
+  gather_facts: false
+  vars:
+    ci_details: "{{ ci_details | mandatory }}"
+  tasks:
+    - name: Update configuration item in CMDB via REST API
+      ansible.builtin.uri:
+        url: "{{ cmdb_url }}/api/now/table/cmdb_ci_vm_instance"
+        method: POST
+        headers:
+          Authorization: "Basic {{ (cmdb_username + ':' + cmdb_password) | b64encode }}"
+          Content-Type: application/json
+        body_format: json
+        body: "{{ ci_details }}"
+        status_code: [200, 201]
+        validate_certs: false
+      register: cmdb_result
+      tags: [canvas_step_update_cmdb]
+
+    - name: Confirm CMDB update
+      ansible.builtin.debug:
+        msg: "CMDB CI updated: {{ cmdb_result.json.result.sys_id }}"
+      tags: [canvas_step_update_cmdb]

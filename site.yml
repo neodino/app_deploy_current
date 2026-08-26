@@ -1,0 +1,8 @@
+---
+- import_playbook: playbooks/raise_infra_ticket.yml
+- import_playbook: playbooks/provision_ec2_instance.yml
+- import_playbook: playbooks/raise_firewall_request.yml
+- import_playbook: playbooks/configure_firewall.yml
+- import_playbook: playbooks/deploy_application.yml
+- import_playbook: playbooks/update_cmdb.yml
+- import_playbook: playbooks/manual_smoke_test.yml

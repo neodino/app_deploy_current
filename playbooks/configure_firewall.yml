@@ -1,0 +1,22 @@
+---
+# canvas_step: configure_firewall
+# intent: Apply firewall rules to allow traffic on specified ports from the given CIDR
+# systems: firewalls
+- name: Configure firewall rules
+  hosts: firewalls
+  gather_facts: false
+  vars:
+    ports: "{{ ports | mandatory }}"
+    cidr: "{{ cidr | mandatory }}"
+  tasks:
+    - name: Apply firewall ACL configuration
+      ansible.netcommon.cli_config:
+        config: |
+          ip access-list extended APP_DEPLOY_IN
+           permit tcp {{ cidr }} any eq {{ ports }}
+      tags: [canvas_step_configure_firewall]
+
+    - name: Confirm firewall rule applied
+      ansible.builtin.debug:
+        msg: "Firewall rule applied: allow {{ ports }} from {{ cidr }}"
+      tags: [canvas_step_configure_firewall]

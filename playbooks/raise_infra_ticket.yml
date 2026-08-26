@@ -1,0 +1,31 @@
+---
+# canvas_step: raise_infra_ticket
+# intent: Create an ITSM infrastructure request ticket to initiate the deployment process
+# systems: itsm
+- name: Raise infrastructure request ticket in ITSM
+  hosts: localhost
+  gather_facts: false
+  vars:
+    request_form: "{{ request_form | mandatory }}"
+  tasks:
+    - name: Submit infrastructure request via ITSM REST API
+      ansible.builtin.uri:
+        url: "{{ itsm_url }}/api/now/table/sc_request"
+        method: POST
+        headers:
+          Authorization: "Basic {{ (itsm_username + ':' + itsm_password) | b64encode }}"
+          Content-Type: application/json
+        body_format: json
+        body:
+          short_description: "Infrastructure request for app deployment"
+          description: "{{ request_form }}"
+          category: "infrastructure"
+        status_code: 201
+        validate_certs: false
+      register: itsm_ticket
+      tags: [canvas_step_raise_infra_ticket]
+
+    - name: Store ticket number
+      ansible.builtin.debug:
+        msg: "Ticket created: {{ itsm_ticket.json.result.number }}"
+      tags: [canvas_step_raise_infra_ticket]

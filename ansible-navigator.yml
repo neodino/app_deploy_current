@@ -1,0 +1,12 @@
+---
+ansible-navigator:
+  execution-environment:
+    enabled: true
+    image: registry.redhat.io/ansible-automation-platform-25/ee-supported-rhel8:latest
+    pull:
+      policy: missing
+  logging:
+    level: warning
+  mode: stdout
+  playbook-artifact:
+    enable: false

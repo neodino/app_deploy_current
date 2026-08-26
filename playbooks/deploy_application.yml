@@ -1,0 +1,30 @@
+---
+# canvas_step: deploy_application
+# intent: Deploy the application artifact to the provisioned EC2 instance
+# systems: aws_ec2
+- name: Deploy application to EC2 instance
+  hosts: all
+  gather_facts: true
+  vars:
+    artifact_id: "{{ artifact_id | mandatory }}"
+  tasks:
+    - name: Fetch application artifact
+      ansible.builtin.get_url:
+        url: "{{ artifact_repo_url }}/{{ artifact_id }}"
+        dest: "/tmp/{{ artifact_id }}"
+        mode: "0644"
+      tags: [canvas_step_deploy_application]
+
+    - name: Deploy artifact
+      ansible.builtin.unarchive:
+        src: "/tmp/{{ artifact_id }}"
+        dest: "{{ app_deploy_path | default('/opt/app') }}"
+        remote_src: true
+      tags: [canvas_step_deploy_application]
+
+    - name: Restart application service
+      ansible.builtin.systemd:
+        name: "{{ app_service_name | default('app') }}"
+        state: restarted
+        enabled: true
+      tags: [canvas_step_deploy_application]

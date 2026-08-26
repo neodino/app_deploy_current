@@ -1,0 +1,57 @@
+---
+controller_job_templates:
+  - name: raise_infra_ticket
+    organization: Default
+    project: app_deploy_current
+    playbook: playbooks/raise_infra_ticket.yml
+    inventory: Demo Inventory
+    ask_credential_on_launch: true
+    description: "Create an ITSM infrastructure request ticket to initiate the deployment process"
+
+  - name: provision_ec2_instance
+    organization: Default
+    project: app_deploy_current
+    playbook: playbooks/provision_ec2_instance.yml
+    inventory: Demo Inventory
+    ask_credential_on_launch: true
+    description: "Provision an EC2 instance with the specified type, AMI, and subnet"
+
+  - name: raise_firewall_request
+    organization: Default
+    project: app_deploy_current
+    playbook: playbooks/raise_firewall_request.yml
+    inventory: Demo Inventory
+    ask_credential_on_launch: true
+    description: "Submit an ITSM firewall change request for the required ports and CIDRs"
+
+  - name: configure_firewall
+    organization: Default
+    project: app_deploy_current
+    playbook: playbooks/configure_firewall.yml
+    inventory: Demo Inventory
+    ask_credential_on_launch: true
+    description: "Apply firewall rules to allow traffic on specified ports from the given CIDR"
+
+  - name: deploy_application
+    organization: Default
+    project: app_deploy_current
+    playbook: playbooks/deploy_application.yml
+    inventory: Demo Inventory
+    ask_credential_on_launch: true
+    description: "Deploy the application artifact to the provisioned EC2 instance"
+
+  - name: update_cmdb
+    organization: Default
+    project: app_deploy_current
+    playbook: playbooks/update_cmdb.yml
+    inventory: Demo Inventory
+    ask_credential_on_launch: true
+    description: "Update the CMDB with the new CI details after successful deployment"
+
+  - name: manual_smoke_test
+    organization: Default
+    project: app_deploy_current
+    playbook: playbooks/manual_smoke_test.yml
+    inventory: Demo Inventory
+    ask_credential_on_launch: true
+    description: "Run automated smoke tests against the deployed application to verify it is healthy"

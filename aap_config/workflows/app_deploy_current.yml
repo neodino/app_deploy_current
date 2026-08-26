@@ -1,0 +1,38 @@
+---
+controller_workflows:
+  - name: "app_deploy_current"
+    description: "Workflow for the app_deploy_current process"
+    organization: Default
+    simplified_workflow_nodes:
+      - identifier: raise_infra_ticket
+        unified_job_template: raise_infra_ticket
+        always_nodes:
+          - provision_ec2_instance
+      - identifier: provision_ec2_instance
+        unified_job_template: provision_ec2_instance
+        always_nodes:
+          - raise_firewall_request
+      - identifier: raise_firewall_request
+        unified_job_template: raise_firewall_request
+        always_nodes:
+          - security_review
+      - identifier: security_review
+        approval_node:
+          name: "Security Review"
+          timeout: 0
+        success_nodes:
+          - configure_firewall
+      - identifier: configure_firewall
+        unified_job_template: configure_firewall
+        always_nodes:
+          - deploy_application
+      - identifier: deploy_application
+        unified_job_template: deploy_application
+        always_nodes:
+          - update_cmdb
+      - identifier: update_cmdb
+        unified_job_template: update_cmdb
+        always_nodes:
+          - manual_smoke_test
+      - identifier: manual_smoke_test
+        unified_job_template: manual_smoke_test

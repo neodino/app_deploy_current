@@ -1,0 +1,8 @@
+---
+controller_projects:
+  - name: app_deploy_current
+    organization: Default
+    scm_type: git
+    scm_url: https://github.com/neodino/app_deploy_current
+    scm_branch: main
+    scm_update_on_launch: true

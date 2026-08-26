@@ -1,0 +1,16 @@
+---
+- name: Apply Controller-as-Code to AAP
+  hosts: localhost
+  connection: local
+  gather_facts: false
+  vars_files:
+    - job_templates/app_deploy_current.yml
+    - workflows/app_deploy_current.yml
+    - projects/app_deploy_current.yml
+  roles:
+    - role: infra.controller_configuration.dispatch
+      vars:
+        controller_host: "{{ lookup('env', 'CONTROLLER_HOST') }}"
+        controller_username: "{{ lookup('env', 'CONTROLLER_USERNAME') }}"
+        controller_password: "{{ lookup('env', 'CONTROLLER_PASSWORD') }}"
+        controller_validate_certs: false
